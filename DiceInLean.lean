@@ -38,3 +38,11 @@ theorem arg_pos_of_Phi_gt_zero {x : ℝ}
     have hx : x ≤ 0 := le_of_not_gt hneg
     have hphi_le : Phi x ≤ Phi 0 := hmono.monotone hx
     linarith
+
+/-- The core scalar lemma used by the paper:
+    if Pgauss μ₁ μ₂ σ₁ σ₂ > 1/2 then μ₁ > μ₂ (assuming σ₁,σ₂ > 0). -/
+theorem mean_gt_of_prob_gt_half
+  {μ₁ μ₂ σ₁ σ₂ : ℝ}
+  (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂)
+  (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1/2) :
+  μ₁ > μ₂ := by sorry
