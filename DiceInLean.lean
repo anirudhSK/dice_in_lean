@@ -1,4 +1,5 @@
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Sqrt
 
 def hello := "world123"
 #eval IO.println s!"DiceInLean: {hello}"
@@ -23,3 +24,8 @@ variable (Phi : ℝ → ℝ)
 
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
+
+/-- The pairwise comparison probability for two independent normals
+    A ~ N(μA, σA^2), B ~ N(μB, σB^2) (σA, σB > 0). -/
+noncomputable def Pgauss (μA μB σA σB : ℝ) : ℝ :=
+  Phi ((μA - μB) / Real.sqrt (σA ^ 2 + σB ^ 2))
