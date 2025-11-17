@@ -17,3 +17,9 @@ theorem real_le_antisymm_interactive {x y : Real} (hxy : x ≤ y) (hyx : y ≤ x
   apply le_antisymm
   · exact hxy
   · exact hyx
+
+-- Axiomatize the two properties of the standard normal CDF used in the paper.
+variable (Phi : ℝ → ℝ)
+
+axiom Phi_strictMono : StrictMono Phi
+axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
