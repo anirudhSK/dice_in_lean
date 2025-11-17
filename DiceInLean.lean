@@ -44,5 +44,10 @@ theorem arg_pos_of_Phi_gt_zero {x : ℝ}
 theorem mean_gt_of_prob_gt_half
   {μ₁ μ₂ σ₁ σ₂ : ℝ}
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂)
-  (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1/2) :
-  μ₁ > μ₂ := by sorry
+  (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1 / 2) :
+  μ₁ > μ₂ := by
+  -- unfold the definition and apply monotonicity of Phi
+  unfold Pgauss at h
+  have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) := by sorry
+  have hard : μ₁ > μ₂ := by sorry
+  exact hard
