@@ -7,3 +7,5 @@ def hello := "world123"
 abbrev Realf := Float
 
 theorem real_eq_self (r : Realf) : r = r := rfl
+
+theorem real_eq_self_mathlib (r : Real) : r = r := rfl
