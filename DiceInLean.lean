@@ -29,3 +29,12 @@ axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
     A ~ N(μ₁, σ₁^2), B ~ N(μ₂, σ₂^2) (σ₁, σ₂ > 0). -/
 noncomputable def Pgauss (μ₁ μ₂ σ₁ σ₂ : ℝ) : ℝ :=
   Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2))
+
+/-- Helper: from Φ(x) > Φ(0) and StrictMono Φ deduce x > 0. -/
+theorem arg_pos_of_Phi_gt_zero {x : ℝ}
+  (h : Phi x > Phi 0) (hmono : StrictMono Phi) : x > 0 := by
+    by_contra hneg
+    -- hneg : ¬ (x > 0), equivalently x ≤ 0
+    have hx : x ≤ 0 := le_of_not_gt hneg
+    have hphi_le : Phi x ≤ Phi 0 := hmono.monotone hx
+    linarith
