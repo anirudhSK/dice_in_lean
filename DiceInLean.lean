@@ -26,6 +26,6 @@ axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
 /-- The pairwise comparison probability for two independent normals
-    A ~ N(μA, σA^2), B ~ N(μB, σB^2) (σA, σB > 0). -/
-noncomputable def Pgauss (μA μB σA σB : ℝ) : ℝ :=
-  Phi ((μA - μB) / Real.sqrt (σA ^ 2 + σB ^ 2))
+    A ~ N(μ₁, σ₁^2), B ~ N(μ₂, σ₂^2) (σ₁, σ₂ > 0). -/
+noncomputable def Pgauss (μ₁ μ₂ σ₁ σ₂ : ℝ) : ℝ :=
+  Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2))
