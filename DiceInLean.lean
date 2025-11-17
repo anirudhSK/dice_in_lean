@@ -12,3 +12,8 @@ theorem real_eq_self_mathlib (r : Real) : r = r := rfl
 
 theorem real_le_antisymm {x y : Real} (hxy : x ≤ y) (hyx : y ≤ x) : x = y :=
   le_antisymm hxy hyx
+
+theorem real_le_antisymm_interactive {x y : Real} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
+  apply le_antisymm
+  · exact hxy
+  · exact hyx
