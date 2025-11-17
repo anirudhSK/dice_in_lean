@@ -9,3 +9,6 @@ abbrev Realf := Float
 theorem real_eq_self (r : Realf) : r = r := rfl
 
 theorem real_eq_self_mathlib (r : Real) : r = r := rfl
+
+theorem real_le_antisymm {x y : Real} (hxy : x ≤ y) (hyx : y ≤ x) : x = y :=
+  le_antisymm hxy hyx
