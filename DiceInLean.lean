@@ -83,4 +83,7 @@ theorem gauss_transitivity
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂) (hσ₃ : 0 < σ₃)
   (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1/2)
   (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1/2) :
-  Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by sorry
+  Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by
+  have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half Phi hσ₁ hσ₂ h12
+  have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half Phi hσ₂ hσ₃ h23
+  -- from the two mean inequalities deduce μ₁ > μ₃
