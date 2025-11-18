@@ -81,8 +81,8 @@ theorem mean_gt_of_prob_gt_half
 theorem gauss_transitivity
   {μ₁ μ₂ μ₃ σ₁ σ₂ σ₃ : ℝ}
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂) (hσ₃ : 0 < σ₃)
-  (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1/2)
-  (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1/2) :
+  (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1 / 2)
+  (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1 / 2) :
   Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by
   have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half Phi hσ₁ hσ₂ h12
   have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half Phi hσ₂ hσ₃ h23
@@ -103,6 +103,9 @@ theorem gauss_transitivity
     exact div_pos diff_pos denom_pos
   -- apply monotonicity of Phi to get the final result
   have phi_monotonic := Phi_strictMono Phi
-  have hphi : Phi ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)) > Phi 0 := by sorry
+  have hphi : Phi ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)) > Phi 0 := by
+    exact phi_monotonic (a := 0)
+                        (b := ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)))
+                        argpos
   simp [Phi_zero] at hphi
   simpa [Pgauss] using hphi
