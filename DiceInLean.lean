@@ -73,3 +73,14 @@ theorem mean_gt_of_prob_gt_half
     -- add μ₂ to both sides to turn μ₁ - μ₂ > 0 into μ₁ > μ₂
     simpa [sub_add_cancel] using add_lt_add_right mulpos μ₂
   exact hard
+
+/-- Main proposition (Appendix A):
+    for independent normal random variables X ~ N(μ1, σ1^2), Y ~ N(μ2, σ2^2),
+    Z ~ N(μ3, σ3^2) with positive σ's,
+    the preference relation defined by P(X>Y) > 1/2 is transitive. -/
+theorem gauss_transitivity
+  {μ₁ μ₂ μ₃ σ₁ σ₂ σ₃ : ℝ}
+  (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂) (hσ₃ : 0 < σ₃)
+  (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1/2)
+  (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1/2) :
+  Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by sorry
