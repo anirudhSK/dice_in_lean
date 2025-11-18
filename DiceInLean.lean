@@ -48,7 +48,13 @@ theorem mean_gt_of_prob_gt_half
   μ₁ > μ₂ := by
   -- unfold the definition and apply monotonicity of Phi
   unfold Pgauss at h
-  have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) := by sorry
+  have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) := by
+    have h1 : 0 < σ₁ * σ₁ := mul_pos hσ₁ hσ₁
+    have h2 : 0 < σ₂ * σ₂ := mul_pos hσ₂ hσ₂
+    have hsum : 0 < σ₁ * σ₁ + σ₂ * σ₂ := add_pos h1 h2
+    have hsum_pow : 0 < σ₁ ^ 2 + σ₂ ^ 2 := by
+      simpa [pow_two] using hsum
+    exact (Real.sqrt_pos).mpr hsum_pow
   have hard : μ₁ > μ₂ := by
     -- from h : Phi ((μ₁ - μ₂) / denom) > 1/2 and Phi 0 = 1/2 we get Phi (...) > Phi 0
     have hphi : Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) > Phi 0 := by
