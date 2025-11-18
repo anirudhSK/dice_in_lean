@@ -56,5 +56,14 @@ theorem mean_gt_of_prob_gt_half
       exact h
     -- strict monotonicity gives the argument > 0
     have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > 0 := by
-      exact arg_pos_of_Phi_gt_zero (Phi := Phi) (hmono := Phi_strictMono Phi) (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
+      exact arg_pos_of_Phi_gt_zero (Phi := Phi) (hmono := Phi_strictMono Phi)
+                                   (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
+    -- multiply both sides by denom > 0 to get μ₁ - μ₂ > 0
+    have mulpos := mul_pos h_inter denom_pos
+    have denom_ne : Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) ≠ 0 := ne_of_gt denom_pos
+    have : ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) * Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) = μ₁ - μ₂ := by
+      field_simp [denom_ne]
+    rw [this] at mulpos
+    -- add μ₂ to both sides to turn μ₁ - μ₂ > 0 into μ₁ > μ₂
+    simpa [sub_add_cancel] using add_lt_add_right mulpos μ₂
   exact hard
