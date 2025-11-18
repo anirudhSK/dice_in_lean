@@ -49,5 +49,12 @@ theorem mean_gt_of_prob_gt_half
   -- unfold the definition and apply monotonicity of Phi
   unfold Pgauss at h
   have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) := by sorry
-  have hard : μ₁ > μ₂ := by sorry
+  have hard : μ₁ > μ₂ := by
+    -- from h : Phi ((μ₁ - μ₂) / denom) > 1/2 and Phi 0 = 1/2 we get Phi (...) > Phi 0
+    have hphi : Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) > Phi 0 := by
+      rw [← Phi_zero] at h
+      exact h
+    -- strict monotonicity gives the argument > 0
+    have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > 0 := by
+      exact arg_pos_of_Phi_gt_zero (Phi := Phi) (hmono := Phi_strictMono Phi) (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
   exact hard
