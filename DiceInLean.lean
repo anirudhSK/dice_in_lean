@@ -1,6 +1,5 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Erf
 
 def hello := "world123"
 #eval IO.println s!"DiceInLean: {hello}"
@@ -21,9 +20,7 @@ theorem real_le_antisymm_interactive {x y : Real} (hxy : x ≤ y) (hyx : y ≤ x
   · exact hyx
 
 -- Axiomatize the two properties of the standard normal CDF used in the paper.
-/-- Phi: standard normal CDF expressed with erf:
-    Phi(x) = 1/2 * (1 + erf(x / √2)). -/
-noncomputable def Phi (x : ℝ) : ℝ := (1 : ℝ) / 2 * (1 + erf (x / Real.sqrt 2))
+variable (Phi : ℝ → ℝ)
 
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
