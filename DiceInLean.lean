@@ -1,8 +1,15 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 -- Axiomatize the two properties of the standard normal CDF used in the paper.
 variable (Phi : ℝ → ℝ)
+
+noncomputable def Phi_int (x : ℝ) : ℝ :=
+  ∫ t in Set.Iic x, Real.exp (-t^2 / 2)
 
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
