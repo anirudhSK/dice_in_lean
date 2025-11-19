@@ -11,6 +11,10 @@ variable (Phi : ℝ → ℝ)
 noncomputable def Phi_int (x : ℝ) : ℝ :=
   ∫ t in Set.Iic x, Real.exp (-t^2 / 2)
 
+-- First, prove the integrand is positive
+lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
+  apply Real.exp_pos
+
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
