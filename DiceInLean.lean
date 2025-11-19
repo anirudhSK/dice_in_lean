@@ -8,8 +8,11 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 -- Axiomatize the two properties of the standard normal CDF used in the paper.
 variable (Phi : ℝ → ℝ)
 
+noncomputable def dexp (x : ℝ) : ℝ :=
+  Real.exp (-x^2 / 2)
+
 noncomputable def Phi_int (x : ℝ) : ℝ :=
-  ∫ t in Set.Iic x, Real.exp (-t^2 / 2)
+  ∫ t in Set.Iic x, dexp t
 
 -- First, prove the integrand is positive
 lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
@@ -17,6 +20,14 @@ lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
 
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
+
+lemma strictMono_phi_int : StrictMono Phi_int := by
+  have hcont : Continuous dexp := by sorry
+  have hpos  : ∀ x, 0 < dexp x := by sorry
+  have hInt : MeasureTheory.Integrable dexp := by sorry
+  have hderiv : ∀ x, deriv Phi_int x = dexp x := by sorry
+  have hderiv_pos : ∀ x, 0 < deriv Phi_int x := by sorry
+  exact strictMono_of_deriv_pos hderiv_pos
 
 /-- The pairwise comparison probability for two independent normals
     A ~ N(μ₁, σ₁^2), B ~ N(μ₂, σ₂^2) (σ₁, σ₂ > 0). -/
