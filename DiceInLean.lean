@@ -15,10 +15,9 @@ noncomputable def Phi (x : ℝ) : ℝ :=
 lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
   apply Real.exp_pos
 
-axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
-lemma strictMono_phi_int : StrictMono Phi := by
+lemma Phi_strictMono : StrictMono Phi := by
   have hcont : Continuous dexp := by sorry
   have hpos  : ∀ x, 0 < dexp x := by sorry
   have hInt : MeasureTheory.Integrable dexp := by sorry
