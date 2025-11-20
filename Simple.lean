@@ -28,6 +28,9 @@ theorem deriv_Phi (x : ℝ) : deriv Phi x = gaussian x := by
   have h_deriv :
       HasDerivAt (fun y => ∫ t in Set.Iic y, gaussian t) (gaussian x) x := by
     -- apply the appropriate FTC lemma from IntervalIntegral.FundThmCalculus
-    sorry
+    have hFTC :=
+      MeasureTheory.hasDerivAt_integral_Iic_of_tendsto_ae
+        (f := gaussian)
+        (x := x)
 
   simpa [Phi] using h_deriv.deriv
