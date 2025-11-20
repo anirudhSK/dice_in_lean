@@ -5,13 +5,10 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
--- Axiomatize the two properties of the standard normal CDF used in the paper.
-variable (Phi : ℝ → ℝ)
-
 noncomputable def dexp (x : ℝ) : ℝ :=
   Real.exp (-x^2 / 2)
 
-noncomputable def Phi_int (x : ℝ) : ℝ :=
+noncomputable def Phi (x : ℝ) : ℝ :=
   ∫ t in Set.Iic x, dexp t
 
 -- First, prove the integrand is positive
@@ -21,17 +18,17 @@ lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
 axiom Phi_strictMono : StrictMono Phi
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
-lemma strictMono_phi_int : StrictMono Phi_int := by
+lemma strictMono_phi_int : StrictMono Phi := by
   have hcont : Continuous dexp := by sorry
   have hpos  : ∀ x, 0 < dexp x := by sorry
   have hInt : MeasureTheory.Integrable dexp := by sorry
-  have hderiv : ∀ x, deriv Phi_int x = dexp x := by sorry
-  have hderiv_pos : ∀ x, 0 < deriv Phi_int x := by sorry
+  have hderiv : ∀ x, deriv Phi x = dexp x := by sorry
+  have hderiv_pos : ∀ x, 0 < deriv Phi x := by sorry
   exact strictMono_of_deriv_pos hderiv_pos
 
 /-- The pairwise comparison probability for two independent normals
     A ~ N(μ₁, σ₁^2), B ~ N(μ₂, σ₂^2) (σ₁, σ₂ > 0). -/
-noncomputable def Pgauss (μ₁ μ₂ σ₁ σ₂ : ℝ) : ℝ :=
+noncomputable def Pgauss (Phi : ℝ -> ℝ) (μ₁ μ₂ σ₁ σ₂ : ℝ) : ℝ :=
   Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2))
 
 /-- Helper: from Φ(x) > Φ(0) and StrictMono Φ deduce x > 0. -/
@@ -66,7 +63,7 @@ theorem mean_gt_of_prob_gt_half
       exact h
     -- strict monotonicity gives the argument > 0
     have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > 0 := by
-      exact arg_pos_of_Phi_gt_zero (Phi := Phi) (hmono := Phi_strictMono Phi)
+      exact arg_pos_of_Phi_gt_zero (hmono := Phi_strictMono)
                                    (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
     -- multiply both sides by denom > 0 to get μ₁ - μ₂ > 0
     have mulpos := mul_pos h_inter denom_pos
@@ -88,8 +85,8 @@ theorem gauss_transitivity
   (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1 / 2)
   (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1 / 2) :
   Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by
-  have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half Phi hσ₁ hσ₂ h12
-  have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half Phi hσ₂ hσ₃ h23
+  have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half hσ₁ hσ₂ h12
+  have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half hσ₂ hσ₃ h23
   -- means are reals, so transitivity gives μ₁ > μ₃
   have μ₁_gt_μ₃ : μ₁ > μ₃ := by linarith [μ₁_gt_μ₂, μ₂_gt_μ₃]
   -- convert back to probability statement
@@ -106,7 +103,7 @@ theorem gauss_transitivity
     -- divide two positive numbers
     exact div_pos diff_pos denom_pos
   -- apply monotonicity of Phi to get the final result
-  have phi_monotonic := Phi_strictMono Phi
+  have phi_monotonic := Phi_strictMono
   have hphi : Phi ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)) > Phi 0 := by
     exact phi_monotonic (a := 0)
                         (b := ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)))
