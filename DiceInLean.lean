@@ -5,24 +5,32 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
-noncomputable def dexp (x : ℝ) : ℝ :=
+noncomputable def gaussian (x : ℝ) : ℝ :=
   Real.exp (-x^2 / 2)
 
 noncomputable def Phi (x : ℝ) : ℝ :=
-  ∫ t in Set.Iic x, dexp t
-
--- First, prove the integrand is positive
-lemma exp_neg_sq_pos (t : ℝ) : 0 < Real.exp (-t^2 / 2) := by
-  apply Real.exp_pos
+  ∫ t in 0..x, gaussian t
 
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
 lemma Phi_strictMono : StrictMono Phi := by
-  have hcont : Continuous dexp := by sorry
-  have hpos  : ∀ x, 0 < dexp x := by sorry
-  have hInt : MeasureTheory.Integrable dexp := by sorry
-  have hderiv : ∀ x, deriv Phi x = dexp x := by sorry
-  have hderiv_pos : ∀ x, 0 < deriv Phi x := by sorry
+  have hcont : Continuous gaussian := by sorry
+  have hpos  : ∀ x, 0 < gaussian x := by
+    intro x
+    unfold gaussian
+    apply Real.exp_pos
+  have hInt : MeasureTheory.Integrable gaussian := by sorry
+  have hderiv : ∀ x, deriv Phi x = gaussian x := by
+    intro x
+    let Hs := Continuous.integral_hasStrictDerivAt hcont (a := 0) x
+    have Hd : HasDerivAt Phi (gaussian x) x := (HasStrictDerivAt.hasDerivAt Hs)
+    -- `HasDerivAt` implies the `deriv` equality
+    exact (HasDerivAt.deriv Hd)
+  have hderiv_pos : ∀ x, 0 < deriv Phi x := by
+    intro x
+    rw [hderiv x]
+    unfold gaussian
+    apply Real.exp_pos
   exact strictMono_of_deriv_pos hderiv_pos
 
 /-- The pairwise comparison probability for two independent normals
