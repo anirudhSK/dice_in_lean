@@ -14,7 +14,10 @@ noncomputable def Phi (x : ℝ) : ℝ :=
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
 
 lemma Phi_strictMono : StrictMono Phi := by
-  have hcont : Continuous gaussian := by sorry
+  have hcont : Continuous gaussian := by
+   have h_inner : Continuous fun (t : ℝ)  => -(t ^ 2) / 2 := by
+     exact ((continuous_id.pow 2).neg).div_const 2
+   exact Real.continuous_exp.comp h_inner
   have hpos  : ∀ x, 0 < gaussian x := by
     intro x
     unfold gaussian
