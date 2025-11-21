@@ -12,8 +12,12 @@ noncomputable def gaussian (x : ℝ) : ℝ := Real.exp (-x^2 / 2)
 noncomputable def Phi (x : ℝ) : ℝ := ∫ t in Set.Iic x, gaussian t
 
 lemma int_diff_Iic (x y : ℝ) : (∫ t in Set.Iic y, gaussian t) - ∫ t in Set.Iic x, gaussian t  = ∫ t in x..y, gaussian t := by
-  have hx : MeasureTheory.IntegrableOn gaussian (Set.Iic x) MeasureTheory.volume := sorry
-  have hy : MeasureTheory.IntegrableOn gaussian (Set.Iic y) MeasureTheory.volume := sorry
+  have hf_total : MeasureTheory.IntegrableOn gaussian (Set.univ : Set ℝ) MeasureTheory.volume := by sorry
+
+  have hx : MeasureTheory.IntegrableOn gaussian (Set.Iic x) MeasureTheory.volume :=
+    MeasureTheory.IntegrableOn.mono_set hf_total (Set.subset_univ (Set.Iic x))
+  have hy : MeasureTheory.IntegrableOn gaussian (Set.Iic y) MeasureTheory.volume :=
+    MeasureTheory.IntegrableOn.mono_set hf_total (Set.subset_univ (Set.Iic y))
   have h_interval :
     (∫ t in Set.Iic y, gaussian t) - ∫ t in Set.Iic x, gaussian t = ∫ t in x..y, gaussian t :=
     intervalIntegral.integral_Iic_sub_Iic hx hy
