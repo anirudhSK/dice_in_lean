@@ -14,8 +14,13 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
   -- this gives integrability on the set Ioi 0; but our function is even, so we can extend to all ℝ
   -- integrable on (-∞, 0) by change of variable x ↦ -x
   have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) := by
+    have h_pre :
+      Set.Iio 0 = (fun x : ℝ => -x) ⁻¹' Set.Ioi 0 := by
+      ext x; simp [Set.Iio, Set.Ioi]
     have h_even : ∀ x, Real.exp (-(1/2) * x^2) = Real.exp (-(1/2) * (-x)^2) := by
       intro x; simp
+    rw [h_pre]
+    exact h_int.comp (fun x => -x) (by simp)
     sorry
 
     -- integrable on {0} trivially
