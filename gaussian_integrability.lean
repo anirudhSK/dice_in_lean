@@ -16,7 +16,11 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
   have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) := by sorry
 
     -- integrable on {0} trivially
-  have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := sorry
+  have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := by
+    apply integrableOn_singleton
+    . dsimp only
+      simp
+    . simpa using measure_singleton
 
   have h_union : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0}) volume := by
     exact IntegrableOn.union h_neg h0
