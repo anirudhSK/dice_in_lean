@@ -17,6 +17,6 @@ theorem deriv_Phi (x : ℝ) : deriv Phi x = gaussian x := by
   have h_int_univ : Integrable gaussian := by sorry
   have h_finite_deriv : ∀ a, HasDerivAt (fun y => ∫ t in a..y, gaussian t) (gaussian x) x := by sorry
   have h_deriv : HasDerivAt Phi (gaussian x) x := by
-    have h_lim : Phi x = ⨆ a, ∫ t in a..x, gaussian t := by sorry
+    have h_lim : Filter.Tendsto (fun a => ∫ t in a..x, gaussian t) Filter.atBot (nhds (Phi x)) := by sorry
     sorry
   simpa [Phi] using h_deriv.deriv
