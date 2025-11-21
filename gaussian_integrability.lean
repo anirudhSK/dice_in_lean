@@ -10,7 +10,7 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
   have hb : 0 < (1 / 2 : ℝ) := by norm_num
   -- integrable on (0, ∞)
   have h_int : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Ioi 0) volume:= by
-     exact (integrableOn_Ioi_exp_neg_mul_sq_iff).mpr hb
+    exact (integrableOn_Ioi_exp_neg_mul_sq_iff).mpr hb
   -- this gives integrability on the set Ioi 0; but our function is even, so we can extend to all ℝ
   -- integrable on (-∞, 0) by change of variable x ↦ -x
   have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) := by sorry
@@ -18,6 +18,14 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     -- integrable on {0} trivially
   have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := sorry
 
-  -- combine all three parts
-  have h_union : Set.Iio 0 ∪ {0} ∪ Set.Ioi 0 = Set.univ := by sorry
-  sorry
+  have h_union : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0}) volume := by
+    exact IntegrableOn.union h_neg h0
+
+  have h_union2 : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0} ∪ Set.Ioi 0) volume := by
+    exact IntegrableOn.union h_union h_int
+
+  have univ_set_union : Set.Iio 0 ∪ {0} ∪ Set.Ioi 0 = Set.univ := by
+    ext x; by_cases hx : x < 0 <;> by_cases hzero : x = 0 <;> by_cases hpos : 0 < x <;> simp [hx, hzero, hpos, lt_of_le_of_ne]
+
+  have h_univ : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) Set.univ volume := by
+    simpa [univ_set_union] using h_union2
