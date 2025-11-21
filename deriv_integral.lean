@@ -16,5 +16,7 @@ theorem deriv_Phi (x : ℝ) : deriv Phi x = gaussian x := by
   have h_meas : Measurable gaussian := by sorry
   have h_int_univ : Integrable gaussian := by sorry
   have h_finite_deriv : ∀ a, HasDerivAt (fun y => ∫ t in a..y, gaussian t) (gaussian x) x := by sorry
-  have h_deriv : HasDerivAt Phi (gaussian x) x := by sorry
+  have h_deriv : HasDerivAt Phi (gaussian x) x := by
+    have h_lim : Phi x = ⨆ a, ∫ t in a..x, gaussian t := by sorry
+    sorry
   simpa [Phi] using h_deriv.deriv
