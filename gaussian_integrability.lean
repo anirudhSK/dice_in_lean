@@ -17,8 +17,10 @@ lemma helper1 :
   (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
     = fun x ↦ Real.exp (-(1 / 2) * x ^ 2) := by sorry
 
-lemma helper2:
-  neg_map ⁻¹' Set.Iio 0 = Set.Ioi 0 := by sorry
+lemma helper2 :
+  neg_map ⁻¹' Set.Iio 0 = Set.Ioi 0 := by
+  ext x
+  simp [neg_map, Set.Iio, Set.Ioi]
 
 theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by
   have hb : 0 < (1 / 2 : ℝ) := by norm_num
