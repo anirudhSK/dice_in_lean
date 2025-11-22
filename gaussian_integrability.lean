@@ -15,7 +15,9 @@ lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
 
 lemma helper1 :
   (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
-    = fun x ↦ Real.exp (-(1 / 2) * x ^ 2) := by sorry
+    = fun x ↦ Real.exp (-(1 / 2) * x ^ 2) := by
+  funext x
+  simp [neg_map]
 
 lemma helper2 :
   neg_map ⁻¹' Set.Iio 0 = Set.Ioi 0 := by
