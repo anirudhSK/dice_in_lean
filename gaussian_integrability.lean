@@ -6,6 +6,20 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 noncomputable def gaussian (x : ℝ) : ℝ := Real.exp (- x^2 / 2)
 
 open MeasureTheory
+
+def neg_map : ℝ → ℝ := fun x => -x
+
+-- Step 2: prove that it's measure-preserving
+lemma neg_map_preserving : MeasurePreserving neg_map volume volume :=
+{ measurable := measurable_neg,
+  map_eq := by
+    -- Lebesgue measure is translation- and negation-invariant
+    sorry }
+
+lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by sorry
+
+lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by sorry
+
 theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by
   have hb : 0 < (1 / 2 : ℝ) := by norm_num
   -- integrable on (0, ∞)
@@ -13,21 +27,10 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     exact (integrableOn_Ioi_exp_neg_mul_sq_iff).mpr hb
   -- this gives integrability on the set Ioi 0; but our function is even, so we can extend to all ℝ
   -- integrable on (-∞, 0) by change of variable x ↦ -x
-  have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) := by
-    have h_pre :
-      Set.Iio 0 = (fun x : ℝ => -x) ⁻¹' Set.Ioi 0 := by
-      ext x; simp [Set.Iio, Set.Ioi]
-    have h_even : ∀ x, Real.exp (-(1/2) * x^2) = Real.exp (-(1/2) * (-x)^2) := by
-      intro x; simp
- -- prove AEStronglyMeasurable
-    have h_meas : AEStronglyMeasurable (fun x => Real.exp (-(1 / 2) * x ^ 2)) (volume.restrict (Set.Iio 0)) := by
-      rw [h_pre]
-      sorry
-  -- prove HasFiniteIntegral
-    have h_fin : HasFiniteIntegral (fun x => Real.exp (-(1 / 2) * x ^ 2)) (volume.restrict (Set.Iio 0)) := by
-      rw [h_pre]
-      sorry
-    exact ⟨h_meas, h_fin⟩
+  have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) volume :=
+    (MeasureTheory.MeasurePreserving.integrableOn_comp_preimage
+    neg_map_measure_preserving
+    neg_map_measurable_embedding).mp h_int
 
     -- integrable on {0} trivially
   have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := by
