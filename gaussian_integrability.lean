@@ -9,16 +9,16 @@ open MeasureTheory
 
 def neg_map : ℝ → ℝ := fun x => -x
 
--- Step 2: prove that it's measure-preserving
-lemma neg_map_preserving : MeasurePreserving neg_map volume volume :=
-{ measurable := measurable_neg,
-  map_eq := by
-    -- Lebesgue measure is translation- and negation-invariant
-    sorry }
-
 lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by sorry
 
 lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by sorry
+
+lemma helper1 :
+  (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
+    = fun x ↦ Real.exp (-(1 / 2) * x ^ 2) := by sorry
+
+lemma helper2:
+  neg_map ⁻¹' Set.Iio 0 = Set.Ioi 0 := by sorry
 
 theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by
   have hb : 0 < (1 / 2 : ℝ) := by norm_num
@@ -27,10 +27,13 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     exact (integrableOn_Ioi_exp_neg_mul_sq_iff).mpr hb
   -- this gives integrability on the set Ioi 0; but our function is even, so we can extend to all ℝ
   -- integrable on (-∞, 0) by change of variable x ↦ -x
-  have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) volume :=
-    (MeasureTheory.MeasurePreserving.integrableOn_comp_preimage
-    neg_map_measure_preserving
-    neg_map_measurable_embedding).mp h_int
+  have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) volume := by
+    have h_comp : IntegrableOn ((fun x => Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map) (neg_map ⁻¹' Set.Iio 0) volume := by
+      rw [helper1, helper2]
+      exact h_int
+    exact (MeasureTheory.MeasurePreserving.integrableOn_comp_preimage
+           neg_map_measure_preserving
+           neg_map_measurable_embedding).mp h_comp
 
     -- integrable on {0} trivially
   have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := by
