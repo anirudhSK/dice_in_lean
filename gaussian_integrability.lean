@@ -53,3 +53,11 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
 
   have h_univ : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) Set.univ volume := by
     simpa [univ_set_union] using h_union2
+
+  have hfun : (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) = (fun x ↦ Real.exp (-x ^ 2 / 2)) := by
+    funext x
+    simp [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc]
+
+  unfold gaussian
+  rw [<- hfun]
+  exact h_univ
