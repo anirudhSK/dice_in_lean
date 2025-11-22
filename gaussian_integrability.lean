@@ -19,9 +19,15 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
       ext x; simp [Set.Iio, Set.Ioi]
     have h_even : ∀ x, Real.exp (-(1/2) * x^2) = Real.exp (-(1/2) * (-x)^2) := by
       intro x; simp
-    rw [h_pre]
-    exact h_int.comp (fun x => -x) (by simp)
-    sorry
+ -- prove AEStronglyMeasurable
+    have h_meas : AEStronglyMeasurable (fun x => Real.exp (-(1 / 2) * x ^ 2)) (volume.restrict (Set.Iio 0)) := by
+      rw [h_pre]
+      sorry
+  -- prove HasFiniteIntegral
+    have h_fin : HasFiniteIntegral (fun x => Real.exp (-(1 / 2) * x ^ 2)) (volume.restrict (Set.Iio 0)) := by
+      rw [h_pre]
+      sorry
+    exact ⟨h_meas, h_fin⟩
 
     -- integrable on {0} trivially
   have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := by
