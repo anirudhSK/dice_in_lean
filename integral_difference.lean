@@ -94,3 +94,24 @@ lemma int_diff (x y : ℝ) :
     Phi y - Phi x = ∫ t in x..y, gaussian t := by
   unfold Phi
   exact (int_diff_Iic x y)
+
+lemma Phi_strictMono : StrictMono Phi := by
+  unfold StrictMono
+  intros x y hxy
+  rw [<- sub_pos]
+  rw [int_diff x y]
+  have hcont : Continuous gaussian := by
+    have h_inner : Continuous fun (t : ℝ)  => -(t ^ 2) / 2 := by
+      exact ((continuous_id.pow 2).neg).div_const 2
+    exact Real.continuous_exp.comp h_inner
+  have hpos : ∀ t ∈ Set.Ioc x y, 0 <= gaussian t := by
+    intros t ht
+    unfold gaussian
+    exact le_of_lt (Real.exp_pos _)
+  have hex : ∃ c ∈ Set.Icc x y, 0 < gaussian c := by
+    use x
+    constructor
+    · exact Set.left_mem_Icc.mpr (le_of_lt hxy)
+    · unfold gaussian
+      exact Real.exp_pos _
+  exact intervalIntegral.integral_pos hxy hcont.continuousOn hpos hex
