@@ -24,9 +24,10 @@ lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by
     linarith
   have h_meas : Measurable neg_map := by
     apply measurable_neg
-  have h_preimage : ∀ t, MeasurableSet t → MeasurableSet (neg_map ⁻¹' t) := by
+  have h_preimage : ∀ t, MeasurableSet t → MeasurableSet (neg_map '' t) := by
     intro t ht
     sorry
+  exact MeasurableEmbedding.mk h_inj h_meas h_preimage
 
 lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
   have h_meas : Measurable neg_map := by
