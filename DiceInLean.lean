@@ -26,7 +26,7 @@ lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by
     apply measurable_neg
   have h_preimage : ∀ t, MeasurableSet t → MeasurableSet (neg_map '' t) := by
     intro t ht
-    sorry
+    simpa [neg_map] using (measurable_neg ht)
   exact MeasurableEmbedding.mk h_inj h_meas h_preimage
 
 lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
