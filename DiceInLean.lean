@@ -9,13 +9,28 @@ noncomputable def gaussian (x : ℝ) : ℝ := (1 / Real.sqrt (2 * Real.pi)) * Re
 
 noncomputable def Phi (x : ℝ) : ℝ := ∫ t in Set.Iic x, gaussian t
 
+open MeasureTheory
+
 -------- Prove that Phi(0) = 1/2 --------
 lemma gaussian_even (x : ℝ) : gaussian (-x) = gaussian x := by
   unfold gaussian
   have : (-x)^2 = x^2 := by ring
   simp [this]
 
-lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by sorry
+lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by
+  simp only [gaussian]
+  have h := integral_gaussian (1/2)
+  -- Go from Integral k * x  to k * Integral x
+  rw [integral_const_mul]
+  -- prove that  ∫ (x : ℝ), Real.exp (-(1 / 2) * x ^ 2) = ∫ (a : ℝ), Real.exp (-a ^ 2 / 2)
+  have h_func : (fun x => Real.exp (-(1 / 2) * x ^ 2)) = (fun a => Real.exp (-a ^ 2 / 2)) := by
+    funext x
+    congr 1
+    ring
+  rw [h_func] at h
+  rw [h]
+  -- simplify the constants
+  field_simp
 
 lemma integral_left_eq_integral_right :
   (∫ t in Set.Iic (0 : ℝ), gaussian t)
@@ -31,8 +46,6 @@ lemma Phi_zero : Phi 0 = (1 : ℝ) / 2 := by
 -----------------
 ---Gaussian integrability proof
 -----------------
-open MeasureTheory
-
 def neg_map : ℝ → ℝ := fun x => -x
 
 lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by
