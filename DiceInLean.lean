@@ -19,7 +19,10 @@ def neg_map : ℝ → ℝ := fun x => -x
 
 lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by sorry
 
-lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by sorry
+lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
+  have h_meas : Measurable neg_map := by sorry
+  have h_map  : Measure.map neg_map volume = volume := by sorry
+  exact MeasureTheory.MeasurePreserving.mk h_meas h_map
 
 lemma helper1 :
   (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
