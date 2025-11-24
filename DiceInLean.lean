@@ -17,7 +17,13 @@ open MeasureTheory
 
 def neg_map : ℝ → ℝ := fun x => -x
 
-lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by sorry
+lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by
+  have h_inj : Function.Injective neg_map := by sorry
+  have h_meas : Measurable neg_map := by
+    apply measurable_neg
+  have h_preimage : ∀ t, MeasurableSet t → MeasurableSet (neg_map ⁻¹' t) := by
+    intro t ht
+    sorry
 
 lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
   have h_meas : Measurable neg_map := by
