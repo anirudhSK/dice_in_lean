@@ -21,7 +21,7 @@ lemma neg_map_measurable_embedding : MeasurableEmbedding neg_map := by sorry
 
 lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
   have h_meas : Measurable neg_map := by
-    exact neg_map_measurable_embedding.measurable
+    apply measurable_neg
   have h_map  : Measure.map neg_map volume = volume :=
     Measure.map_neg_eq_self (μ := volume)
   exact MeasureTheory.MeasurePreserving.mk h_meas h_map
