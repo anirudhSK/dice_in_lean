@@ -71,6 +71,12 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     apply integrableOn_singleton
     · dsimp only
       simp
+      simp only [ENNReal.mul_eq_top, not_or]
+      constructor
+      · -- ¬(‖(√π)⁻¹‖ₑ = ⊤ ∧ ‖√2‖ₑ⁻¹ ≠ 0)
+        simp [ENNReal.coe_ne_top]
+      · -- ¬(‖(√π)⁻¹‖ₑ ≠ 0 ∧ ‖√2‖ₑ⁻¹ = ⊤)
+        simp [ENNReal.coe_ne_top]
     · simpa using measure_singleton
 
   have h_union : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0}) volume := by
