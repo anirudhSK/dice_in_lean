@@ -37,8 +37,8 @@ lemma neg_map_measure_preserving : MeasurePreserving neg_map volume volume := by
   exact MeasureTheory.MeasurePreserving.mk h_meas h_map
 
 lemma helper1 :
-  (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
-    = fun x ↦ Real.exp (-(1 / 2) * x ^ 2) := by
+  (fun x ↦ (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map
+    = fun x ↦ (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2) := by
   funext x
   simp [neg_map]
 
@@ -50,12 +50,12 @@ lemma helper2 :
 theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by
   have hb : 0 < (1 / 2 : ℝ) := by norm_num
   -- integrable on (0, ∞)
-  have h_int : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Ioi 0) volume:= by
+  have h_int : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) *Real.exp (-(1 / 2) * x ^ 2)) (Set.Ioi 0) volume:= by
     exact (integrableOn_Ioi_exp_neg_mul_sq_iff).mpr hb
   -- this gives integrability on the set Ioi 0; but our function is even, so we can extend to all ℝ
   -- integrable on (-∞, 0) by change of variable x ↦ -x
-  have h_neg : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) volume := by
-    have h_comp : IntegrableOn ((fun x => Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map)
+  have h_neg : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0) volume := by
+    have h_comp : IntegrableOn ((fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) ∘ neg_map)
                                (neg_map ⁻¹' Set.Iio 0) volume := by
       rw [helper1, helper2]
       exact h_int
@@ -64,16 +64,16 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
            neg_map_measurable_embedding).mp h_comp
 
     -- integrable on {0} trivially
-  have h0 : IntegrableOn (fun x => Real.exp (-(1/2) * x^2)) {0} volume := by
+  have h0 : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1/2) * x^2)) {0} volume := by
     apply integrableOn_singleton
     · dsimp only
       simp
     · simpa using measure_singleton
 
-  have h_union : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0}) volume := by
+  have h_union : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) (Set.Iio 0 ∪ {0}) volume := by
     exact IntegrableOn.union h_neg h0
 
-  have h_union2 : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2))
+  have h_union2 : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2))
                                (Set.Iio 0 ∪ {0} ∪ Set.Ioi 0) volume := by
     exact IntegrableOn.union h_union h_int
 
@@ -120,17 +120,32 @@ lemma Phi_strictMono : StrictMono Phi := by
   have hcont : Continuous gaussian := by
     have h_inner : Continuous fun (t : ℝ)  => -(t ^ 2) / 2 := by
       exact ((continuous_id.pow 2).neg).div_const 2
-    exact Real.continuous_exp.comp h_inner
+    -- exp is continuous, compose with the inner function
+    have h_exp : Continuous fun (t : ℝ) => Real.exp (-t ^ 2 / 2) := by
+      exact Real.continuous_exp.comp h_inner
+    -- multiply by the constant (1 / √(2π))
+    have h_const : Continuous fun (t : ℝ) => (1 / Real.sqrt (2 * Real.pi)) := by
+      exact continuous_const
+    exact Continuous.mul h_const h_exp
   have hpos : ∀ t ∈ Set.Ioc x y, 0 <= gaussian t := by
     intros t ht
     unfold gaussian
-    exact le_of_lt (Real.exp_pos _)
+    apply mul_nonneg
+    · apply div_nonneg
+      · exact zero_le_one
+      · simp
+    · exact le_of_lt (Real.exp_pos _)
   have hex : ∃ c ∈ Set.Icc x y, 0 < gaussian c := by
     use x
     constructor
     · exact Set.left_mem_Icc.mpr (le_of_lt hxy)
     · unfold gaussian
-      exact Real.exp_pos _
+      apply mul_pos
+      --prove that 1/√(2π) > 0
+      · apply div_pos
+        · exact zero_lt_one
+        · simp [Real.pi_pos]
+      · exact Real.exp_pos _
   exact intervalIntegral.integral_pos hxy hcont.continuousOn hpos hex
 
 
