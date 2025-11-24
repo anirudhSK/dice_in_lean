@@ -8,7 +8,25 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 noncomputable def gaussian (x : ℝ) : ℝ := (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-x^2 / 2)
 
 noncomputable def Phi (x : ℝ) : ℝ := ∫ t in Set.Iic x, gaussian t
-axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
+
+-------- Prove that Phi(0) = 1/2 --------
+lemma gaussian_even (x : ℝ) : gaussian (-x) = gaussian x := by
+  unfold gaussian
+  have : (-x)^2 = x^2 := by ring
+  simp [this]
+
+lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by sorry
+
+lemma integral_left_eq_integral_right :
+  (∫ t in Set.Iic (0 : ℝ), gaussian t)
+    = (∫ t in Set.Ici (0 : ℝ), gaussian t) := by sorry
+
+lemma integral_left_half :
+  (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by sorry
+
+lemma Phi_zero : Phi 0 = (1 : ℝ) / 2 := by
+  unfold Phi
+  simpa using integral_left_half
 
 -----------------
 ---Gaussian integrability proof
