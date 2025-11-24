@@ -5,7 +5,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
-noncomputable def gaussian (x : ℝ) : ℝ :=  Real.exp (-x^2 / 2)
+noncomputable def gaussian (x : ℝ) : ℝ := (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-x^2 / 2)
 
 noncomputable def Phi (x : ℝ) : ℝ := ∫ t in Set.Iic x, gaussian t
 axiom Phi_zero : Phi 0 = (1 : ℝ) / 2
