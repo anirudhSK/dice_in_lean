@@ -33,11 +33,24 @@ lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by
   field_simp
 
 lemma integral_left_eq_integral_right :
-  (∫ t in Set.Iic (0 : ℝ), gaussian t)
-    = (∫ t in Set.Ici (0 : ℝ), gaussian t) := by sorry
+  (∫ t in Set.Iic (0 : ℝ), (gaussian t : ℝ))
+    = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by sorry
+-- TODO: use evenness of gaussian and change of variable t ↦ -t
 
 lemma integral_left_half :
-  (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by sorry
+  (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
+   have h_split :
+    ∫ x : ℝ, gaussian x = (∫ t in Set.Iic (0 : ℝ), gaussian t) + (∫ t in Set.Ici (0 : ℝ), gaussian t) := by sorry
+   rw [<- integral_left_eq_integral_right] at h_split
+   have h2 : (∫ t in Set.Iic 0, gaussian t) + (∫ t in Set.Iic 0, gaussian t)
+          = 2 * ∫ t in Set.Iic 0, gaussian t := by ring
+   rw [h2] at h_split
+   rw [mul_comm] at h_split
+   rw [integral_gaussian_total] at h_split
+   have : (∫ t in Set.Iic 0, gaussian t) = 1 / 2 := by
+     field_simp at h_split
+     linarith
+   exact this
 
 lemma Phi_zero : Phi 0 = (1 : ℝ) / 2 := by
   unfold Phi
