@@ -90,15 +90,17 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     ext x; by_cases hx : x < 0 <;> by_cases hzero : x = 0 <;>
     by_cases hpos : 0 < x <;> simp [hzero]
 
-  have h_univ : IntegrableOn (fun x => Real.exp (-(1 / 2) * x ^ 2)) Set.univ volume := by
+  have h_univ : IntegrableOn (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) Set.univ volume := by
     simpa [univ_set_union] using h_union2
 
-  have hfun : (fun x ↦ Real.exp (-(1 / 2) * x ^ 2)) = (fun x ↦ Real.exp (-x ^ 2 / 2)) := by
-    funext x
-    simp [div_eq_mul_inv, mul_comm]
-
   unfold gaussian
-  rw [<- hfun]
+    -- Prove the functions are equal
+  have : (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-x ^ 2 / 2)) =
+         (fun x => (1 / Real.sqrt (2 * Real.pi)) * Real.exp (-(1 / 2) * x ^ 2)) := by
+    ext x
+    congr 1
+    ring
+  rw [this]
   exact h_univ
 --------------------------------
 
