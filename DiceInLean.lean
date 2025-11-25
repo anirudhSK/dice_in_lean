@@ -160,7 +160,9 @@ lemma integral_left_eq_integral_right :
 
       -- Apply setIntegral_map
       have step2 : ∫ t in Set.Iic 0, gaussian t ∂(Measure.map neg_map volume) =
-                   ∫ t in neg_map ⁻¹' Set.Iic 0, (gaussian ∘ neg_map) t := by sorry
+                   ∫ t in neg_map ⁻¹' Set.Iic 0, (gaussian ∘ neg_map) t := by
+        rw [MeasureTheory.setIntegral_map measurableSet_Iic h_integrable h_aemeas]
+        rfl
 
       -- Use preimage relation
       have step3 : ∫ t in neg_map ⁻¹' Set.Iic 0, (gaussian ∘ neg_map) t =
