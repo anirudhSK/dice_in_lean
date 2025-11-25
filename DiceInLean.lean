@@ -40,7 +40,24 @@ lemma integral_left_eq_integral_right :
 lemma integral_left_half :
   (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
    have h_split :
-    ∫ x : ℝ, gaussian x = (∫ t in Set.Iic (0 : ℝ), gaussian t) + (∫ t in Set.Ici (0 : ℝ), gaussian t) := by sorry
+    ∫ x : ℝ, gaussian x = (∫ t in Set.Iic (0 : ℝ), gaussian t) + (∫ t in Set.Ici (0 : ℝ), gaussian t) := by
+      have h_univ : ∫ x : ℝ, gaussian x = ∫ x in Set.univ, gaussian x := by simp
+      rw [h_univ]
+      have univ_split : Set.univ = Set.Iic (0 : ℝ) ∪ Set.Ici (0 : ℝ) := by
+        ext x
+        simp
+      rw [univ_split]
+      have hst : AEDisjoint volume (Set.Iic (0 : ℝ)) (Set.Ici (0 : ℝ)) := by
+        simp [AEDisjoint, Set.Iic, Set.Ici, Real.volume_singleton]
+        have null_inter : ({ x | x ≤ 0 } ∩ { x | 0 ≤ x }) = {0} := by
+          ext x
+          simp only [Set.mem_inter_iff, Set.mem_setOf, Set.mem_singleton_iff, le_antisymm_iff]
+        rw [null_inter]
+
+      have ht : NullMeasurableSet  (Set.Ici (0 : ℝ)) := ⟨Set.Ici (0 : ℝ), measurableSet_Ici, by simp⟩
+      have hfs : IntegrableOn gaussian (Set.Iic (0 : ℝ)) volume := by sorry
+      have hft : IntegrableOn gaussian (Set.Ici (0 : ℝ)) volume := by sorry
+      rw [MeasureTheory.integral_union_ae hst ht hfs hft]
    rw [<- integral_left_eq_integral_right] at h_split
    have h2 : (∫ t in Set.Iic 0, gaussian t) + (∫ t in Set.Iic 0, gaussian t)
           = 2 * ∫ t in Set.Iic 0, gaussian t := by ring
