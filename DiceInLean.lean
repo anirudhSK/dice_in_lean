@@ -37,6 +37,20 @@ lemma integral_left_eq_integral_right :
     = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by sorry
 -- TODO: use evenness of gaussian and change of variable t ↦ -t
 
+
+-- Suppose you already have:
+lemma test : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by sorry
+
+example (h : IntegrableOn gaussian (Set.univ : Set ℝ) volume) :
+    IntegrableOn gaussian (Set.Iic 0) volume := by
+  classical
+  -- Turn IntegrableOn over univ into Integrable
+  have h' : Integrable gaussian volume := by
+    simpa [IntegrableOn] using h
+
+  -- Now restrict to the subset
+  exact h'.integrableOn (Set.Iic 0)
+
 lemma integral_left_half :
   (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
    have h_split :
