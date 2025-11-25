@@ -134,8 +134,22 @@ lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by
 
 lemma integral_left_eq_integral_right :
   (∫ t in Set.Iic (0 : ℝ), (gaussian t : ℝ))
-    = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by sorry
--- TODO: use evenness of gaussian and change of variable t ↦ -t
+    = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by
+    -- Preimage relation
+    have h_pre : neg_map ⁻¹' Set.Iic 0 = Set.Ici 0 := by
+      ext x; simp [neg_map, Set.Iic, Set.Ici]
+
+    -- Step 1: Transform the integral using measure-preserving property
+    -- ∫_{(-∞,0]} f = ∫_{[0,∞)} f∘neg_map
+    have h_transform : (∫ t in Set.Iic 0, gaussian t) =
+                        ∫ t in Set.Ici 0, (gaussian ∘ neg_map) t := by sorry
+
+    -- Step 2: Simplify gaussian ∘ neg_map to just gaussian using evenness
+    rw [h_transform]
+    congr 1
+    ext t
+    simp only [Function.comp, neg_map]
+    exact gaussian_even t
 
 lemma integral_left_half :
   (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
