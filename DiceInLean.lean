@@ -367,4 +367,4 @@ theorem gauss_transitivity
   simp [Phi_zero] at hphi
   simpa [Pgauss] using hphi
 
-  #print axioms gauss_transitivity
+#print axioms gauss_transitivity
