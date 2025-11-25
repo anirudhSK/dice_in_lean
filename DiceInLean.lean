@@ -49,10 +49,11 @@ lemma integral_left_half :
       rw [univ_split]
       have hst : AEDisjoint volume (Set.Iic (0 : ℝ)) (Set.Ici (0 : ℝ)) := by
         simp [AEDisjoint, Set.Iic, Set.Ici, Real.volume_singleton]
-        have null_inter : ({ x | x ≤ 0 } ∩ { x | 0 ≤ x }) = {0} := by
+        have null_inter : ({ x : ℝ | x ≤ 0 } ∩ { x : ℝ | 0 ≤ x }) = {0} := by
           ext x
           simp only [Set.mem_inter_iff, Set.mem_setOf, Set.mem_singleton_iff, le_antisymm_iff]
         rw [null_inter]
+        simp
 
       have ht : NullMeasurableSet  (Set.Ici (0 : ℝ)) := ⟨Set.Ici (0 : ℝ), measurableSet_Ici, by simp⟩
       have hfs : IntegrableOn gaussian (Set.Iic (0 : ℝ)) volume := by sorry
