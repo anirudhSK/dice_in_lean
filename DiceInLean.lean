@@ -142,7 +142,28 @@ lemma integral_left_eq_integral_right :
     -- Step 1: Transform the integral using measure-preserving property
     -- ∫_{(-∞,0]} f = ∫_{[0,∞)} f∘neg_map
     have h_transform : (∫ t in Set.Iic 0, gaussian t) =
-                        ∫ t in Set.Ici 0, (gaussian ∘ neg_map) t := by sorry
+                        ∫ t in Set.Ici 0, (gaussian ∘ neg_map) t := by
+      -- First, use measure preserving to rewrite LHS with mapped measure
+      have step1 : (∫ t in Set.Iic 0, gaussian t) =
+                   ∫ t in Set.Iic 0, gaussian t ∂(Measure.map neg_map volume) := by
+          rw [neg_map_measure_preserving.map_eq]
+
+      -- Prepare integrability condition
+      have h_integrable : AEStronglyMeasurable gaussian (Measure.map neg_map volume) := by sorry
+
+      -- Prepare measurability condition
+      have h_aemeas : AEMeasurable neg_map volume := by exact neg_map_measurable_embedding.measurable.aemeasurable
+
+      -- Apply setIntegral_map
+      have step2 : ∫ t in Set.Iic 0, gaussian t ∂(Measure.map neg_map volume) =
+                   ∫ t in neg_map ⁻¹' Set.Iic 0, (gaussian ∘ neg_map) t := by sorry
+
+      -- Use preimage relation
+      have step3 : ∫ t in neg_map ⁻¹' Set.Iic 0, (gaussian ∘ neg_map) t =
+               ∫ t in Set.Ici 0, (gaussian ∘ neg_map) t := by rw [h_pre]
+
+      -- Chain them together
+      rw [step1, step2, step3]
 
     -- Step 2: Simplify gaussian ∘ neg_map to just gaussian using evenness
     rw [h_transform]
