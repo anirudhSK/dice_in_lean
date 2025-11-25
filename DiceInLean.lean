@@ -11,83 +11,6 @@ noncomputable def Phi (x : ℝ) : ℝ := ∫ t in Set.Iic x, gaussian t
 
 open MeasureTheory
 
--------- Prove that Phi(0) = 1/2 --------
-lemma gaussian_even (x : ℝ) : gaussian (-x) = gaussian x := by
-  unfold gaussian
-  have : (-x)^2 = x^2 := by ring
-  simp [this]
-
-lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by
-  simp only [gaussian]
-  have h := integral_gaussian (1/2)
-  -- Go from Integral k * x  to k * Integral x
-  rw [integral_const_mul]
-  -- prove that  ∫ (x : ℝ), Real.exp (-(1 / 2) * x ^ 2) = ∫ (a : ℝ), Real.exp (-a ^ 2 / 2)
-  have h_func : (fun x => Real.exp (-(1 / 2) * x ^ 2)) = (fun a => Real.exp (-a ^ 2 / 2)) := by
-    funext x
-    congr 1
-    ring
-  rw [h_func] at h
-  rw [h]
-  -- simplify the constants
-  field_simp
-
-lemma integral_left_eq_integral_right :
-  (∫ t in Set.Iic (0 : ℝ), (gaussian t : ℝ))
-    = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by sorry
--- TODO: use evenness of gaussian and change of variable t ↦ -t
-
-
--- Suppose you already have:
-lemma test : IntegrableOn gaussian (Set.univ : Set ℝ) volume := by sorry
-
-example (h : IntegrableOn gaussian (Set.univ : Set ℝ) volume) :
-    IntegrableOn gaussian (Set.Iic 0) volume := by
-  classical
-  -- Turn IntegrableOn over univ into Integrable
-  have h' : Integrable gaussian volume := by
-    simpa [IntegrableOn] using h
-
-  -- Now restrict to the subset
-  exact h'.integrableOn (Set.Iic 0)
-
-lemma integral_left_half :
-  (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
-   have h_split :
-    ∫ x : ℝ, gaussian x = (∫ t in Set.Iic (0 : ℝ), gaussian t) + (∫ t in Set.Ici (0 : ℝ), gaussian t) := by
-      have h_univ : ∫ x : ℝ, gaussian x = ∫ x in Set.univ, gaussian x := by simp
-      rw [h_univ]
-      have univ_split : Set.univ = Set.Iic (0 : ℝ) ∪ Set.Ici (0 : ℝ) := by
-        ext x
-        simp
-      rw [univ_split]
-      have hst : AEDisjoint volume (Set.Iic (0 : ℝ)) (Set.Ici (0 : ℝ)) := by
-        simp [AEDisjoint, Set.Iic, Set.Ici, Real.volume_singleton]
-        have null_inter : ({ x : ℝ | x ≤ 0 } ∩ { x : ℝ | 0 ≤ x }) = {0} := by
-          ext x
-          simp only [Set.mem_inter_iff, Set.mem_setOf, Set.mem_singleton_iff, le_antisymm_iff]
-        rw [null_inter]
-        simp
-
-      have ht : NullMeasurableSet  (Set.Ici (0 : ℝ)) := ⟨Set.Ici (0 : ℝ), measurableSet_Ici, by simp⟩
-      have hfs : IntegrableOn gaussian (Set.Iic (0 : ℝ)) volume := by sorry
-      have hft : IntegrableOn gaussian (Set.Ici (0 : ℝ)) volume := by sorry
-      rw [MeasureTheory.integral_union_ae hst ht hfs hft]
-   rw [<- integral_left_eq_integral_right] at h_split
-   have h2 : (∫ t in Set.Iic 0, gaussian t) + (∫ t in Set.Iic 0, gaussian t)
-          = 2 * ∫ t in Set.Iic 0, gaussian t := by ring
-   rw [h2] at h_split
-   rw [mul_comm] at h_split
-   rw [integral_gaussian_total] at h_split
-   have : (∫ t in Set.Iic 0, gaussian t) = 1 / 2 := by
-     field_simp at h_split
-     linarith
-   exact this
-
-lemma Phi_zero : Phi 0 = (1 : ℝ) / 2 := by
-  unfold Phi
-  simpa using integral_left_half
-
 -----------------
 ---Gaussian integrability proof
 -----------------
@@ -186,7 +109,81 @@ theorem gaussian_integrableOn : IntegrableOn gaussian (Set.univ : Set ℝ) volum
     ring
   rw [this]
   exact h_univ
---------------------------------
+-------------------------end of gaussian integrability proof-------------------------
+
+-------- Prove that Phi(0) = 1/2 --------
+lemma gaussian_even (x : ℝ) : gaussian (-x) = gaussian x := by
+  unfold gaussian
+  have : (-x)^2 = x^2 := by ring
+  simp [this]
+
+lemma integral_gaussian_total : ∫ x : ℝ, gaussian x = 1 := by
+  simp only [gaussian]
+  have h := integral_gaussian (1/2)
+  -- Go from Integral k * x  to k * Integral x
+  rw [integral_const_mul]
+  -- prove that  ∫ (x : ℝ), Real.exp (-(1 / 2) * x ^ 2) = ∫ (a : ℝ), Real.exp (-a ^ 2 / 2)
+  have h_func : (fun x => Real.exp (-(1 / 2) * x ^ 2)) = (fun a => Real.exp (-a ^ 2 / 2)) := by
+    funext x
+    congr 1
+    ring
+  rw [h_func] at h
+  rw [h]
+  -- simplify the constants
+  field_simp
+
+lemma integral_left_eq_integral_right :
+  (∫ t in Set.Iic (0 : ℝ), (gaussian t : ℝ))
+    = (∫ t in Set.Ici (0 : ℝ), (gaussian t : ℝ)) := by sorry
+-- TODO: use evenness of gaussian and change of variable t ↦ -t
+
+lemma integral_left_half :
+  (∫ t in Set.Iic (0 : ℝ), gaussian t) = 1/2 := by
+   have h_split :
+    ∫ x : ℝ, gaussian x = (∫ t in Set.Iic (0 : ℝ), gaussian t) + (∫ t in Set.Ici (0 : ℝ), gaussian t) := by
+      have h_univ : ∫ x : ℝ, gaussian x = ∫ x in Set.univ, gaussian x := by simp
+      rw [h_univ]
+      have univ_split : Set.univ = Set.Iic (0 : ℝ) ∪ Set.Ici (0 : ℝ) := by
+        ext x
+        simp
+      rw [univ_split]
+      have hst : AEDisjoint volume (Set.Iic (0 : ℝ)) (Set.Ici (0 : ℝ)) := by
+        simp [AEDisjoint, Set.Iic, Set.Ici, Real.volume_singleton]
+        have null_inter : ({ x : ℝ | x ≤ 0 } ∩ { x : ℝ | 0 ≤ x }) = {0} := by
+          ext x
+          simp only [Set.mem_inter_iff, Set.mem_setOf, Set.mem_singleton_iff, le_antisymm_iff]
+        rw [null_inter]
+        simp
+
+      have ht : NullMeasurableSet  (Set.Ici (0 : ℝ)) := ⟨Set.Ici (0 : ℝ), measurableSet_Ici, by simp⟩
+
+      have hfs : IntegrableOn gaussian (Set.Iic (0 : ℝ)) volume := by
+        have h' : Integrable gaussian volume := by
+          simpa [IntegrableOn] using gaussian_integrableOn
+        exact (Integrable.integrableOn h' (s := Set.Iic 0)  (μ := volume))
+
+
+      have hft : IntegrableOn gaussian (Set.Ici (0 : ℝ)) volume := by
+        have h' : Integrable gaussian volume := by
+          simpa [IntegrableOn] using gaussian_integrableOn
+        exact (Integrable.integrableOn h' (s := Set.Ici 0)  (μ := volume))
+
+      rw [MeasureTheory.integral_union_ae hst ht hfs hft]
+   rw [<- integral_left_eq_integral_right] at h_split
+   have h2 : (∫ t in Set.Iic 0, gaussian t) + (∫ t in Set.Iic 0, gaussian t)
+          = 2 * ∫ t in Set.Iic 0, gaussian t := by ring
+   rw [h2] at h_split
+   rw [mul_comm] at h_split
+   rw [integral_gaussian_total] at h_split
+   have : (∫ t in Set.Iic 0, gaussian t) = 1 / 2 := by
+     field_simp at h_split
+     linarith
+   exact this
+
+lemma Phi_zero : Phi 0 = (1 : ℝ) / 2 := by
+  unfold Phi
+  simpa using integral_left_half
+-------- End of Phi(0) = 1/2 proof --------
 
 lemma int_diff_Iic (x y : ℝ) : (∫ t in Set.Iic y, gaussian t) - ∫ t in Set.Iic x, gaussian t  =
                                 ∫ t in x..y, gaussian t := by
