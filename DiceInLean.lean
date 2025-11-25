@@ -149,7 +149,11 @@ lemma integral_left_eq_integral_right :
           rw [neg_map_measure_preserving.map_eq]
 
       -- Prepare integrability condition
-      have h_integrable : AEStronglyMeasurable gaussian (Measure.map neg_map volume) := by sorry
+      have h_integrable : AEStronglyMeasurable gaussian (Measure.map neg_map volume) := by
+        rw [neg_map_measure_preserving.map_eq]
+        have h' : Integrable gaussian volume := by
+         simpa [IntegrableOn] using gaussian_integrableOn
+        exact h'.aestronglyMeasurable
 
       -- Prepare measurability condition
       have h_aemeas : AEMeasurable neg_map volume := by exact neg_map_measurable_embedding.measurable.aemeasurable
