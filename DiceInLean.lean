@@ -307,7 +307,6 @@ theorem mean_gt_of_prob_gt_half
   {p : ℝ}
   {c : ℝ} (hc : Phi c = p)
   {μ₁ μ₂ σ₁ σ₂ : ℝ}
-  (hp1 : (1/2 : ℝ) < p) (hp2 : p < 1)
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂)
   (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > p) :
   μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) := by
@@ -357,7 +356,30 @@ theorem gauss_transitivity
   have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half hc hp1 hp2 hσ₂ hσ₃ h23
   -- means are reals, so transitivity gives μ₁ > μ₃
   have μ₁_gt_μ₃ : μ₁ - μ₃ > c * √(σ₁ ^ 2 + σ₃ ^ 2) := by
-    sorry
+    -- c > 0 since Phi(0) = 1/2 < p = Phi(c) and Phi is strictly monotone
+    have hc_pos : 0 < c := by
+      have : Phi 0 < Phi c := by rw [Phi_zero, hc]; exact hp1
+      exact Phi_strictMono.lt_iff_lt.mp this
+    -- key sqrt inequality: √(σ₁²+σ₃²) ≤ √(σ₁²+σ₂²) + √(σ₂²+σ₃²)
+    have sqrt_ineq : √(σ₁^2 + σ₃^2) ≤ √(σ₁^2 + σ₂^2) + √(σ₂^2 + σ₃^2) := by
+      have ha : 0 ≤ σ₁^2 + σ₂^2 := by positivity
+      have hb : 0 ≤ σ₂^2 + σ₃^2 := by positivity
+      have hsum_nn : 0 ≤ √(σ₁^2 + σ₂^2) + √(σ₂^2 + σ₃^2) := by positivity
+      rw [← Real.sqrt_sq hsum_nn]
+      apply Real.sqrt_le_sqrt
+      -- need: σ₁²+σ₃² ≤ (√(σ₁²+σ₂²) + √(σ₂²+σ₃²))²
+      -- RHS = (σ₁²+σ₂²) + 2*√a*√b + (σ₂²+σ₃²) ≥ σ₁²+σ₃²
+      have h1 := Real.sq_sqrt ha
+      have h2 := Real.sq_sqrt hb
+      have h3 : 0 ≤ √(σ₁^2 + σ₂^2) * √(σ₂^2 + σ₃^2) := by positivity
+      have expand : (√(σ₁^2 + σ₂^2) + √(σ₂^2 + σ₃^2))^2 =
+        (√(σ₁^2 + σ₂^2))^2 + 2 * (√(σ₁^2 + σ₂^2) * √(σ₂^2 + σ₃^2)) + (√(σ₂^2 + σ₃^2))^2 := by ring
+      linarith [sq_nonneg σ₂]
+    -- chain the inequalities
+    have sum_ineq : μ₁ - μ₃ > c * √(σ₁^2 + σ₂^2) + c * √(σ₂^2 + σ₃^2) := by
+      linarith [μ₁_gt_μ₂, μ₂_gt_μ₃]
+    linarith [mul_le_mul_of_nonneg_left sqrt_ineq hc_pos.le]
+
   -- convert back to probability statement
   have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2) := by
     apply Real.sqrt_pos.mpr
