@@ -291,16 +291,18 @@ noncomputable def Pgauss (Phi : ℝ -> ℝ) (μ₁ μ₂ σ₁ σ₂ : ℝ) : �
   Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2))
 
 /-- Helper: from Φ(x) > Φ(0) and StrictMono Φ deduce x > 0. -/
-theorem arg_pos_of_Phi_gt_zero {x : ℝ}
-  (h : Phi x > Phi 0) (hmono : StrictMono Phi) : x > 0 := by
+theorem arg_pos_of_Phi_gt_c {x c : ℝ}
+  (h : Phi x > Phi c) (hmono : StrictMono Phi) : x > c := by
     by_contra hneg
-    -- hneg : ¬ (x > 0), equivalently x ≤ 0
-    have hx : x ≤ 0 := le_of_not_gt hneg
-    have hphi_le : Phi x ≤ Phi 0 := hmono.monotone hx
+    -- hneg : ¬ (x > c), equivalently x ≤ c
+    have hx : x ≤ c := le_of_not_gt hneg
+    have hphi_le : Phi x ≤ Phi c := hmono.monotone hx
     linarith
 
 /-- The core scalar lemma used by the paper:
-    if Pgauss μ₁ μ₂ σ₁ σ₂ > p then μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (assuming σ₁,σ₂ > 0). -/
+    if Pgauss μ₁ μ₂ σ₁ σ₂ > p then μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2))
+    (assuming σ₁,σ₂ > 0).
+    where Phi c = p -/
 theorem mean_gt_of_prob_gt_half
   {p : ℝ}
   {c : ℝ} (hc : Phi c = p)
@@ -324,15 +326,17 @@ theorem mean_gt_of_prob_gt_half
       rw [← hc] at h
       exact h
     -- strict monotonicity gives the argument > 0
-    have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > Phi c := by
-      exact arg_pos_of_Phi_gt_zero (hmono := Phi_strictMono)
+    have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > c := by
+      exact arg_pos_of_Phi_gt_c (hmono := Phi_strictMono)
                                    (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
+    have h_inter2 : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) - c > 0 := by
+      exact sub_pos.mpr h_inter
     -- multiply both sides by denom > 0 to get μ₁ - μ₂ > 0
-    have mulpos := mul_pos h_inter denom_pos
+    have mulpos := mul_pos h_inter2 denom_pos
     have denom_ne : Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) ≠ 0 := ne_of_gt denom_pos
     have : ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) * Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) = μ₁ - μ₂ := by
       field_simp [denom_ne]
-    rw [this] at mulpos
+    rw [sub_mul, this] at mulpos
     -- add μ₂ to both sides to turn μ₁ - μ₂ > 0 into μ₁ > μ₂
     simpa [sub_add_cancel] using add_lt_add_right mulpos μ₂
   exact hard
@@ -352,7 +356,8 @@ theorem gauss_transitivity
   have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half hc hp1 hp2 hσ₁ hσ₂ h12
   have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half hc hp1 hp2 hσ₂ hσ₃ h23
   -- means are reals, so transitivity gives μ₁ > μ₃
-  have μ₁_gt_μ₃ : μ₁ > μ₃ := by linarith [μ₁_gt_μ₂, μ₂_gt_μ₃]
+  have μ₁_gt_μ₃ : μ₁ - μ₃ > c * √(σ₁ ^ 2 + σ₃ ^ 2) := by
+    sorry
   -- convert back to probability statement
   have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2) := by
     apply Real.sqrt_pos.mpr
@@ -361,18 +366,17 @@ theorem gauss_transitivity
       have h3 := pow_pos hσ₃ 2
       linarith
     exact this
-  have argpos : (μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2) > 0 := by
-        -- μ₁ > μ₃  ⟹  μ₁ - μ₃ > 0
-    have diff_pos : μ₁ - μ₃ > 0 := sub_pos.mpr μ₁_gt_μ₃
-    -- divide two positive numbers
-    exact div_pos diff_pos denom_pos
+  have argpos : (μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2) > c := by
+    rw [gt_iff_lt, lt_div_iff₀ denom_pos]
+    linarith
+
   -- apply monotonicity of Phi to get the final result
   have phi_monotonic := Phi_strictMono
-  have hphi : Phi ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)) > Phi 0 := by
-    exact phi_monotonic (a := 0)
+  have hphi : Phi ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)) > Phi c := by
+    exact phi_monotonic (a := c)
                         (b := ((μ₁ - μ₃) / Real.sqrt (σ₁ ^ 2 + σ₃ ^ 2)))
                         argpos
-  simp [Phi_zero] at hphi
+  rw [hc] at hphi
   simpa [Pgauss] using hphi
 
 #print axioms gauss_transitivity
