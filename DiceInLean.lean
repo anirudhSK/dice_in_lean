@@ -300,12 +300,15 @@ theorem arg_pos_of_Phi_gt_zero {x : ℝ}
     linarith
 
 /-- The core scalar lemma used by the paper:
-    if Pgauss μ₁ μ₂ σ₁ σ₂ > 1/2 then μ₁ > μ₂ (assuming σ₁,σ₂ > 0). -/
+    if Pgauss μ₁ μ₂ σ₁ σ₂ > p then μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (assuming σ₁,σ₂ > 0). -/
 theorem mean_gt_of_prob_gt_half
+  {p : ℝ}
+  {c : ℝ} (hc : Phi c = p)
   {μ₁ μ₂ σ₁ σ₂ : ℝ}
+  (hp1 : (1/2 : ℝ) < p) (hp2 : p < 1)
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂)
-  (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1 / 2) :
-  μ₁ > μ₂ := by
+  (h : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > p) :
+  μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) := by
   -- unfold the definition and apply monotonicity of Phi
   unfold Pgauss at h
   have denom_pos : 0 < Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2) := by
@@ -315,13 +318,13 @@ theorem mean_gt_of_prob_gt_half
     have hsum_pow : 0 < σ₁ ^ 2 + σ₂ ^ 2 := by
       simpa [pow_two] using hsum
     exact (Real.sqrt_pos).mpr hsum_pow
-  have hard : μ₁ > μ₂ := by
-    -- from h : Phi ((μ₁ - μ₂) / denom) > 1/2 and Phi 0 = 1/2 we get Phi (...) > Phi 0
-    have hphi : Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) > Phi 0 := by
-      rw [← Phi_zero] at h
+  have hard : μ₁ - μ₂ > c * (Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) := by
+    -- from h : Phi ((μ₁ - μ₂) / denom) > p and Phi c = p we get Phi (...) > Phi 0
+    have hphi : Phi ((μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) > Phi c := by
+      rw [← hc] at h
       exact h
     -- strict monotonicity gives the argument > 0
-    have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > 0 := by
+    have h_inter : (μ₁ - μ₂) / √(σ₁ ^ 2 + σ₂ ^ 2) > Phi c := by
       exact arg_pos_of_Phi_gt_zero (hmono := Phi_strictMono)
                                    (x := (μ₁ - μ₂) / Real.sqrt (σ₁ ^ 2 + σ₂ ^ 2)) (h := hphi)
     -- multiply both sides by denom > 0 to get μ₁ - μ₂ > 0
@@ -337,15 +340,17 @@ theorem mean_gt_of_prob_gt_half
 /-- Main proposition (Appendix A):
     for independent normal random variables X ~ N(μ1, σ1^2), Y ~ N(μ2, σ2^2),
     Z ~ N(μ3, σ3^2) with positive σ's,
-    the preference relation defined by P(X>Y) > 1/2 is transitive. -/
+    the preference relation defined by P(X>Y) > p is transitive. -/
 theorem gauss_transitivity
+  {p : ℝ} (hp1 : (1/2 : ℝ) < p) (hp2 : p < 1)
+  {c : ℝ} (hc : Phi c = p) -- TODO: need to move this into proof.
   {μ₁ μ₂ μ₃ σ₁ σ₂ σ₃ : ℝ}
   (hσ₁ : 0 < σ₁) (hσ₂ : 0 < σ₂) (hσ₃ : 0 < σ₃)
-  (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > 1 / 2)
-  (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > 1 / 2) :
-  Pgauss Phi μ₁ μ₃ σ₁ σ₃ > 1/2 := by
-  have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half hσ₁ hσ₂ h12
-  have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half hσ₂ hσ₃ h23
+  (h12 : Pgauss Phi μ₁ μ₂ σ₁ σ₂ > p)
+  (h23 : Pgauss Phi μ₂ μ₃ σ₂ σ₃ > p) :
+  Pgauss Phi μ₁ μ₃ σ₁ σ₃ > p := by
+  have μ₁_gt_μ₂ := mean_gt_of_prob_gt_half hc hp1 hp2 hσ₁ hσ₂ h12
+  have μ₂_gt_μ₃ := mean_gt_of_prob_gt_half hc hp1 hp2 hσ₂ hσ₃ h23
   -- means are reals, so transitivity gives μ₁ > μ₃
   have μ₁_gt_μ₃ : μ₁ > μ₃ := by linarith [μ₁_gt_μ₂, μ₂_gt_μ₃]
   -- convert back to probability statement
